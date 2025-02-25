@@ -6,6 +6,7 @@ from modified_buried_volume import BuriedVolume
 from io import BytesIO
 from PIL import Image
 import base64
+from time import time
 
 # 设置环境变量
 os.environ['QT_QPA_FONTDIR'] = 'C:/Windows/Fonts'

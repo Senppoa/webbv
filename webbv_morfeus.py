@@ -174,8 +174,8 @@ with st.form(key="form1"):  # 表单中只负责计算数据并存储到内存�
         }
         st.session_state.calculating = False
         # 在关键进度更新后添加短暂延迟
-        progress_bar.progress(20)
-        time.sleep(0.3)  # 0.3秒延迟让用户感知进度变化
+        progress_bar.progress(10)
+        time.sleep(0.1)  # 0.3秒延迟让用户感知进度变化
 
 if 'page_initialized' in st.session_state and 'result_data' in st.session_state:
     st.success("✅ 计算完成！")  # 显示完成标记

@@ -37,7 +37,7 @@ st.markdown(
         <br>
         <small style="font-size: 18px;">
             <strong>Developed by </strong>
-            <a href="https://orcid.org/0000-0001-5735-9343" target="_blank" 
+            <a href="https://orcid.org/0009-0001-5735-9343" target="_blank" 
                style="color: #2e86c1; text-decoration: none;">
                 <strong>Tang Kun</strong>
             </a>

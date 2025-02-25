@@ -158,11 +158,11 @@ with st.form(key="form1"):  # 表单中只负责计算数据并存储到内存�
 
         # 保存结果到内存
         result_content = f"""Ligand name: {ligand_name}
-        Fraction Buried Volume: {bv.fraction_buried_volume}
-        metal_index: {center_index}
-        z_axis_atoms: {z_axis_atoms_index}
-        xz_plane_atoms: {xz_plane_atoms_index}
-        reverse_z: {reverse_z}"""
+    Fraction Buried Volume: {bv.fraction_buried_volume}
+    metal_index: {center_index}
+    z_axis_atoms: {z_axis_atoms_index}
+    xz_plane_atoms: {xz_plane_atoms_index}
+    reverse_z: {reverse_z}"""
 
         # 生成图片到内存
         img_buffer = BytesIO()

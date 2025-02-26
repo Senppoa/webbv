@@ -35,7 +35,7 @@ st.markdown(
             Morfeus
         </a>
         <br>
-        <small style="font-size: 18px;">
+        <small style="font-size: 16px;">
             <strong>Developed by </strong>
             <a href="https://orcid.org/0009-0001-5735-9343" target="_blank" 
                style="color: #2e86c1; text-decoration: none;">
@@ -47,11 +47,12 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-img = Image.open('./icon.jpg')
-img_resized = img.resize((200, 200))
+img = Image.open('./icon.png')
+# img_resized = img.resize((200, 200))
 # 将图片转换为 base64 字符串
 buffered = BytesIO()
-img_resized.save(buffered, format="JPEG")
+img.save(buffered, format="PNG")  # 保存原图片到缓冲区
+# img_resized.save(buffered, format="PNG")
 img_base64 = base64.b64encode(buffered.getvalue()).decode()
 # 构造居中 HTML 代码
 html_code = f"""
@@ -98,8 +99,8 @@ with st.form(key="form1"):  # 表单中只负责计算数据并存储到内存�
     )
 
     excluded_atoms_input = st.text_input(
-        '需要排除的原子编号',
-        help='使用英文或中文逗号分隔'
+        '请输入需要排除的原子编号',
+        help='使用英文或中文逗号分隔，也可不填'
     )
 
     excluded_atoms = []
@@ -110,13 +111,23 @@ with st.form(key="form1"):  # 表单中只负责计算数据并存储到内存�
             if i.strip().isdigit()
         ]
 
-    reverse_z = st.checkbox('视图从z轴反方向绘制')
+    sphere_radius = st.number_input(
+        '请输入球半径',
+        value=3.5, min_value=0.0, step=0.1,
+        help='即绘制埋藏体积图时的球半径，默认为3.5 Å'
+    )
+
+    include_hs = st.checkbox('计算时是否包含氢原子')
+
+    reverse_z = st.checkbox('视图是否从z轴原子反方向绘制')
+
     run = st.form_submit_button("运行计算")
 
     if run and user_file:
         st.session_state.calculating = True
         progress_bar = st.progress(0)
-        st.write("正在计算...")
+        starting_text = st.empty()
+        starting_text.write("正在计算...")
 
         # 处理XYZ文件内容
         ligand_name = os.path.splitext(user_file.name)[0]
@@ -150,19 +161,25 @@ with st.form(key="form1"):  # 表单中只负责计算数据并存储到内存�
                           excluded_atoms=excluded_atoms,
                           z_axis_atoms=z_axis_atoms,
                           xz_plane_atoms=xz_plane_atoms,
+                          radius=sphere_radius,
+                          include_hs=include_hs,
                           reverse_z=reverse_z,
                           )
+
+        progress_bar.progress(80)
+        # 在关键进度更新后添加短暂延迟
+        time.sleep(0.3)  # 0.3秒延迟让用户感知进度变化
 
         # 计算埋藏体积
         fraction_buried_volume = bv.fraction_buried_volume * 100
 
         # 保存结果到内存
         result_content = f"""Ligand name: {ligand_name}
-Fraction Buried Volume: {bv.fraction_buried_volume}
+Fraction buried volume: {bv.fraction_buried_volume}
 metal_index: {center_index}
-z_axis_atoms: {z_axis_atoms_index}
-xz_plane_atoms: {xz_plane_atoms_index}
-reverse_z: {reverse_z}"""
+z_axis_atoms_index: {z_axis_atoms_index}
+xz_plane_atoms_index: {xz_plane_atoms_index}
+Reverse_z: {reverse_z}"""
 
         # 生成图片到内存
         img_buffer = BytesIO()
@@ -177,9 +194,10 @@ reverse_z: {reverse_z}"""
             "report": result_content.encode()  # 文本报告二进制数据
         }
         st.session_state.calculating = False
-        # 在关键进度更新后添加短暂延迟
-        time.sleep(0.3)  # 0.3秒延迟让用户感知进度变化
-        progress_bar.empty()
+
+        progress_bar.progress(100)
+        starting_text.write("")  # 删除启动提示
+        # progress_bar.empty()  # 删除进度条
 
 if 'page_initialized' in st.session_state and 'result_data' in st.session_state:
     st.success("✅ 计算完成！")  # 显示完成标记

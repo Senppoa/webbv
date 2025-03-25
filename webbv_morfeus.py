@@ -145,7 +145,7 @@ with st.form(key="form1"):  # 表单中只负责计算数据并存储到内存�
         # 分割文件内容以获取原子信息和坐标
         for line in all_lines:
             split = line.split()
-            atoms.append(int(split[0]))
+            atoms.append(split[0])
             coor_x.append(float(split[1]))
             coor_y.append(float(split[2]))
             coor_z.append(float(split[3]))

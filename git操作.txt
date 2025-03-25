@@ -1,4 +1,5 @@
 git status
 git add .  # 添加所有更改
+git pull origin main
 git commit -m "fourth message"  # 提交更改，并添加提交信息
 git push origin main

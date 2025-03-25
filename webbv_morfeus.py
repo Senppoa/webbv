@@ -7,6 +7,7 @@ from io import BytesIO
 from PIL import Image
 import base64
 import time
+import numpy as np
 
 # 设置环境变量
 os.environ['QT_QPA_FONTDIR'] = 'C:/Windows/Fonts'
@@ -69,7 +70,8 @@ if 'temp_dir' not in st.session_state:
 
 user_file = st.file_uploader("请上传一个 xyz 文件", type=['xyz'])
 if user_file is not None:
-    all_lines = user_file.readlines()
+    content = user_file.getvalue().decode("utf-8")
+    all_lines = content.splitlines()
     if len(all_lines) < 2:
         st.error("请确保上传的是一个有效的 XYZ 文件。")
     else:
@@ -145,12 +147,16 @@ with st.form(key="form1"):  # 表单中只负责计算数据并存储到内存�
         # 分割文件内容以获取原子信息和坐标
         for line in all_lines:
             split = line.split()
-            atoms.append(str(split[0]))
+            try:  # 支持数字或符号形式的两种原子名称输入方式
+                atoms.append(int(split[0]))
+            except:
+                atoms.append(split[0])
             coor_x.append(float(split[1]))
             coor_y.append(float(split[2]))
             coor_z.append(float(split[3]))
         # 将原子列表和坐标列表组合成 Morfeus 需要的格式
-        elements = atoms
+        print(all_lines)
+        elements = np.array(atoms)
         coordinates = list(zip(coor_x, coor_y, coor_z))
 
         z_axis_atoms = [z_axis_atoms_index]

@@ -68,41 +68,41 @@ st.markdown(html_code, unsafe_allow_html=True)
 if 'temp_dir' not in st.session_state:
     st.session_state.temp_dir = tempfile.TemporaryDirectory()
 
-user_file = st.file_uploader("请上传一个 xyz 文件", type=['xyz'])
+user_file = st.file_uploader("Please upload an xyz file", type=['xyz'])
 if user_file is not None:
     content = user_file.getvalue().decode("utf-8")
     all_lines = content.splitlines()
     if len(all_lines) < 2:
-        st.error("请确保上传的是一个有效的 XYZ 文件。")
+        st.error("Please ensure that you upload a valid XYZ file.")
     else:
         try:
             atom_count = int(all_lines[0].strip())
-            st.success(f"成功上传 XYZ 文件，分子中包含 {atom_count} 个原子。")
+            st.success(f"Successfully uploaded XYZ file, the molecule contains {atom_count} atoms.")
         except ValueError:
-            st.error("上传的文件格式不正确。")
+            st.error("The uploaded file format is incorrect.")
 
 with st.form(key="form1"):  # 表单中只负责计算数据并存储到内存中，不涉及文件下载等功能
     center_index = st.number_input(
-        '请输入中心原子编号',
+        'Please enter the central atom index',
         value=0, min_value=0, step=1,
-        help='一般为金属中心或有机配体的配位原子'
+        help='Usually the metal center or the coordinating atom of the organic ligand'
     )
 
     z_axis_atoms_index = st.number_input(
-        '请输入z轴方向的原子编号',
+        'Please enter the atom index for the z-axis direction',
         value=0, min_value=0, step=1,
-        help='决定俯视图的方位'
+        help='Determines the orientation of the top view'
     )
 
     xz_plane_atoms_index = st.number_input(
-        '请输入决定xz平面的原子编号',
+        'Please enter the atom index that defines the xz plane',
         value=0, min_value=0, step=1,
-        help='即x轴方向的原子编号'
+        help='i.e., the atom index for the x-axis direction'
     )
 
     excluded_atoms_input = st.text_input(
-        '请输入需要排除的原子编号',
-        help='使用英文或中文逗号分隔，也可不填'
+        'Please enter the atom indices to be excluded',
+        help='Separate with commas, or leave blank'
     )
 
     excluded_atoms = []
@@ -114,22 +114,22 @@ with st.form(key="form1"):  # 表单中只负责计算数据并存储到内存�
         ]
 
     sphere_radius = st.number_input(
-        '请输入球半径',
+        'Please enter the sphere radius',
         value=3.5, min_value=0.0, step=0.1,
-        help='即绘制埋藏体积图时的球半径，默认为3.5 Å'
+        help='The sphere radius for drawing the buried volume map, default is 3.5 Å'
     )
 
-    include_hs = st.checkbox('计算时是否包含氢原子')
+    include_hs = st.checkbox('Include hydrogen atoms in calculation')
 
-    reverse_z = st.checkbox('视图是否从z轴原子反方向绘制')
+    reverse_z = st.checkbox('Draw view from opposite direction of z-axis atom')
 
-    run = st.form_submit_button("运行计算")
+    run = st.form_submit_button("Run Calculation")
 
     if run and user_file:
         st.session_state.calculating = True
         progress_bar = st.progress(0)
         starting_text = st.empty()
-        starting_text.write("正在计算...")
+        starting_text.write("Calculating...")
 
         # 处理XYZ文件内容
         ligand_name = os.path.splitext(user_file.name)[0]
@@ -206,25 +206,25 @@ Reverse_z: {reverse_z}"""
         # progress_bar.empty()  # 删除进度条
 
 if 'page_initialized' in st.session_state and 'result_data' in st.session_state:
-    st.success("✅ 计算完成！")  # 显示完成标记
+    st.success("✅ Calculation completed!")  # Display completion mark
     # 持久化显示结果以及下载按钮
     data = st.session_state.result_data
     ligand_name = data["ligand_name"]
-    st.image(BytesIO(data["image"]), caption="埋藏体积立体图")
-    st.write(f"埋藏体积百分比: {data['fraction']:.2f}%")
+    st.image(BytesIO(data["image"]), caption="Buried Volume Steric Map")
+    st.write(f"Buried Volume Percentage: {data['fraction']:.2f}%")
 
     # 下载按钮
     col1, col2 = st.columns(2)
     with col1:
         st.download_button(
-            label="下载报告文本",
+            label="Download Report",
             data=data["report"],
             file_name=f"{ligand_name}_report.txt",
             mime="text/plain"
         )
     with col2:
         st.download_button(
-            label="下载埋藏体积立体图",
+            label="Download Steric Map",
             data=data["image"],
             file_name=f"{ligand_name}_steric_map.png",
             mime="image/png"
@@ -244,7 +244,7 @@ if 'page_initialized' in st.session_state and 'result_data' in st.session_state:
     zip_buffer.seek(0)
 
     st.download_button(
-        label="下载完整结果包 (ZIP)",
+        label="Download Complete Results (ZIP)",
         data=zip_buffer,
         file_name=f"{ligand_name}_results.zip",
         mime="application/zip"
